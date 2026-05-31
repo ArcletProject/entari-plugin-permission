@@ -1,0 +1,20 @@
+[project]
+name = "entari-plugin-permission"
+version = "0.1.0"
+description = "Permission system for Entari based on Cithun"
+authors = [
+    {"name" = "RF-Tar-Railt", "email" = "rf_tar_railt@qq.com"}
+]
+dependencies = [
+    "arclet-entari>=0.18.0rc1",
+    "arclet-cithun>=1.3.2",
+    "entari-plugin-user>=0.1.5"
+]
+requires-python = ">=3.10"
+readme = "README.md"
+license = {"text" = "MIT"}
+
+[dependency-groups]
+dev = [
+    "arclet-entari[yaml,cron,reload,dotenv] >= 0.17.4"
+]
