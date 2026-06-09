@@ -39,10 +39,10 @@ async def mask(
 
 
 MASK = system.pre_role("group:mask", "Mask")
-system.pre_assign(MASK, "command.mask", Permission(7))
 mask_track = system.pre_track("mask_track", "Mask Track")
 system.pre_track_level(mask_track, system.default_role, "default")
 system.pre_track_level(mask_track, MASK, "mask")
 
+system.pre_assign(MASK, "command.mask", Permission(7))
 system.pre_assign(AUTH_1, "command.mask", Permission.VISIT)
 system.pre_assign(AUTH_3, "command.mask", Permission.VISIT | Permission.AVAILABLE)

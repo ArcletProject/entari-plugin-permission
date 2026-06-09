@@ -11,10 +11,12 @@ from arclet.cithun import User as CithunUser  # noqa: F401
 from arclet.entari import declare_static, metadata, plugin
 from arclet.entari.event.lifespan import Startup
 from entari_plugin_user.models import UserSession
+from entari_plugin_user.utils import set_user_authority
 
 from .check import check_permission as check_permission
 from .check import require_permission as require_permission
 from .main import system as system
+from .event import UserSetTrackLevel as UserSetTrackLevel
 from .params import UserOwner as UserOwner
 
 metadata(
@@ -53,11 +55,23 @@ async def init_roles():
         ["member", "advanced-member", "admin", "senior-admin", "superuser"]
     )
 
+_auth_map = {"member": 1, "advanced-member": 2, "admin": 3, "senior-admin": 4, "superuser": 5}
+
+
+# @plugin.listen(UserSetTrackLevel)
+async def sync_authority(event: UserSetTrackLevel):
+    if event.track.id == AUTHORITY.id and event.user.name.startswith("user:"):
+        user_id = int(event.user.name[5:])
+        await set_user_authority(
+            user_id, _auth_map.get(event.level.level_name, 1)
+        )
+
 
 @system.engine.register_strategy
 async def authority_attach(user, resource, context: UserSession | None, current_mask, permission_lookup):
     if context:
         user = await system.get_or_create_user(f"user:{context.user.id}", context.user.name)
+        # if not system.get_user_track_level(user, AUTHORITY):
         await system.set_user_track_level(
             user, AUTHORITY, context.user.authority - 1,
         )

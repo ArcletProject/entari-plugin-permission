@@ -2,6 +2,7 @@ import asyncio
 from collections.abc import Callable, Iterable
 from re import Pattern
 
+from arclet.letoderea import publish
 from arclet.cithun import InheritMode, ResourceNode, Role, User
 from arclet.cithun.async_ import AsyncStore
 from arclet.cithun.model import AclEntry, Permission, Track, TrackLevel
@@ -9,6 +10,7 @@ from entari_plugin_database import get_session
 from sqlalchemy.orm import selectinload
 from sqlalchemy.sql import select
 
+from .event import UserSetTrackLevel
 from .model import (
     AclDependencyModel,
     AclEntryModel,
@@ -384,6 +386,9 @@ class ORMStore(AsyncStore):
             new_role_id = levels[level_index].role_id
             user_roles_model = UserRolesModel(user_id=user.id, role_id=new_role_id)
             await session.merge(user_roles_model)
+        publish(
+            UserSetTrackLevel(user=user, track=track, level=levels[level_index])
+        )
 
     async def update_acl(self, acl: AclEntry, allow_mask: Permission, deny_mask: Permission | None = None) -> None:
         await self.loaded.wait()
