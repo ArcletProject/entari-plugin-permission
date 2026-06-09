@@ -13,33 +13,25 @@ from arclet.entari.event.lifespan import Startup
 from entari_plugin_user.models import UserSession
 from entari_plugin_user.utils import set_user_authority
 
+from .main import AUTH_1, AUTH_2, AUTH_3, AUTH_4, AUTH_5, AUTHORITY
 from .check import check_permission as check_permission
 from .check import require_permission as require_permission
 from .main import system as system
 from .event import UserSetTrackLevel as UserSetTrackLevel
 from .params import UserOwner as UserOwner
+from .config import Config
+from . import handler
 
 metadata(
     name="Permission",
     author=[{"name": "RF-Tar-Railt", "email": "rf_tar_railt@qq.com"}],
     version="0.1.0",
     description="基于 Cithun 的权限系统",
-    depend_services=["database/sqlalchemy"]
+    depend_services=["database/sqlalchemy"],
+    config=Config,
+    readme="README.md",
 )
 declare_static()
-
-AUTH_1 = system.pre_role("group:authority.1", "Authority 1")
-AUTH_2 = system.pre_role("group:authority.2", "Authority 2")
-AUTH_3 = system.pre_role("group:authority.3", "Authority 3")
-AUTH_4 = system.pre_role("group:authority.4", "Authority 4")
-AUTH_5 = system.pre_role("group:authority.5", "Authority 5")
-AUTHORITY = system.pre_track("authority", "Authority Track")
-
-system.pre_assign(AUTH_1, "authority.1", Permission("v-a"))
-system.pre_assign(AUTH_2, "authority.2", Permission("v-a"))
-system.pre_assign(AUTH_3, "authority.3", Permission("v-a"))
-system.pre_assign(AUTH_4, "authority.4", Permission("v-a"))
-system.pre_assign(AUTH_5, "authority.5", Permission("v-a"))
 
 
 @plugin.listen(Startup)
@@ -70,9 +62,15 @@ async def sync_authority(event: UserSetTrackLevel):
 @system.engine.register_strategy
 async def authority_attach(user, resource, context: UserSession | None, current_mask, permission_lookup):
     if context:
-        user = await system.get_or_create_user(f"user:{context.user.id}", context.user.name)
-        # if not system.get_user_track_level(user, AUTHORITY):
-        await system.set_user_track_level(
-            user, AUTHORITY, context.user.authority - 1,
-        )
+        current_user = await system.get_or_create_user(f"user:{context.user.id}", context.user.name)
+        if not (lvl := system.get_user_track_level(current_user, AUTHORITY)):
+            await system.set_user_track_level(
+                current_user, AUTHORITY, context.user.authority - 1,
+            )
+        elif _auth_map.get(lvl.level_name, 1) != context.user.authority:
+            await system.set_user_track_level(
+                current_user, AUTHORITY, context.user.authority - 1,
+            )
+    if (level := system.get_user_track_level(user, AUTHORITY)) and level.level_name == "superuser":
+        return Permission(7)
     return current_mask

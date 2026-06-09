@@ -6,7 +6,7 @@ authors = [
     {"name" = "RF-Tar-Railt", "email" = "rf_tar_railt@qq.com"}
 ]
 dependencies = [
-    "arclet-entari>=0.18.0rc1",
+    "arclet-entari>=0.18.0rc2",
     "arclet-cithun>=1.3.3",
     "entari-plugin-user>=0.1.5"
 ]

@@ -41,7 +41,7 @@ class require_permission(Propagator):
         default_available (bool): 是否默认可用，默认为True
         prompt (bool): 是否提示
     """
-    def __init__(self, permission: str, default_available: bool = True, prompt: bool = False, priority: int = 1):
+    def __init__(self, permission: str, default_available: bool = True, prompt: bool = False, priority: int = 100):
         self.checker = check_permission(permission, default_available, prompt)
         self.priority = priority
 

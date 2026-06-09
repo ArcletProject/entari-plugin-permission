@@ -13,7 +13,7 @@ mask_cmd = command.mount(
         Option("--default", action=store_true, default=False),
     ),
 )
-mask_cmd.propagators.append(require_permission("command.mask", default_available=False, prompt=True, priority=100))
+mask_cmd.propagators.append(require_permission("command.mask", default_available=False, prompt=True))
 
 
 @mask_cmd.handle()

@@ -106,6 +106,16 @@ class ORMStore(AsyncStore):
             self.tracks[tid] = track
             return track
 
+    async def delete_track(self, tid: str) -> Track:
+        await self.loaded.wait()
+        if tid not in self.tracks:
+            raise KeyError(tid)
+        async with get_session() as session, session.begin() as _:
+            track_model = await session.get(TrackModel, tid)
+            if track_model:
+                await session.delete(track_model)
+        return self.tracks.pop(tid)
+
     async def _add_resource(self, res: ResourceNode):
         await self.loaded.wait()
         self.resources[res.id] = res
@@ -348,6 +358,23 @@ class ORMStore(AsyncStore):
             for lvl in levels_to_update:
                 lvl.index -= 1
                 await session.merge(lvl)
+
+    async def clear_track_levels(self, track: Track) -> None:
+        await self.loaded.wait()
+        track.levels.clear()
+        async with get_session() as session, session.begin() as _:
+            for level_model in (
+                await session.scalars(select(TrackLevelModel).where(TrackLevelModel.track_id == track.id))
+            ).all():
+                await session.delete(level_model)
+
+    async def update_track_name(self, track: Track, name: str):
+        await self.loaded.wait()
+        track.name = name
+        async with get_session() as session, session.begin() as _:
+            track_model = await session.get(TrackModel, track.id)
+            if track_model:
+                track_model.name = name
 
     async def set_user_track_level(self, user: User, track: Track, level_index: int) -> None:
         """将用户在某个 Track 上设置到指定等级。

@@ -112,3 +112,17 @@ class System(ORMStore, AsyncPermissionService[UserSession], AsyncPermissionExecu
 
 
 system = System()
+
+
+AUTH_1 = system.pre_role("group:authority.1", "Authority 1")
+AUTH_2 = system.pre_role("group:authority.2", "Authority 2")
+AUTH_3 = system.pre_role("group:authority.3", "Authority 3")
+AUTH_4 = system.pre_role("group:authority.4", "Authority 4")
+AUTH_5 = system.pre_role("group:authority.5", "Authority 5")
+AUTHORITY = system.pre_track("authority", "Authority Track")
+
+system.pre_assign(AUTH_1, "authority.1", Permission("v-a"))
+system.pre_assign(AUTH_2, "authority.2", Permission("v-a"))
+system.pre_assign(AUTH_3, "authority.3", Permission("v-a"))
+system.pre_assign(AUTH_4, "authority.4", Permission("v-a"))
+system.pre_assign(AUTH_5, "authority.5", Permission("v-a"))
