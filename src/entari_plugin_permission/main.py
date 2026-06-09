@@ -4,6 +4,8 @@ import fnmatch
 import re
 from typing import TypeAlias, TypeVar, overload
 
+from arclet.letoderea.scope import Scope, scope_ctx
+from arclet.letoderea.utils import DisposableList
 from arclet.cithun import Permission, ResourceNode, Role, User
 from arclet.cithun.async_ import AsyncPermissionEngine, AsyncPermissionExecutor, AsyncPermissionService
 from entari_plugin_user.models import UserSession
@@ -27,7 +29,7 @@ class System(ORMStore, AsyncPermissionService[UserSession], AsyncPermissionExecu
         ORMStore.__init__(self)
         AsyncPermissionService.__init__(self, engine=AsyncPermissionEngine[UserSession](), storage=self)
         AsyncPermissionExecutor.__init__(self, self, self)
-        self.attaches: list[tuple[Callable[[str], bool], Attach1]] = []
+        self.attaches: DisposableList[tuple[Callable[[str], bool], Attach1]] = DisposableList([])
         self.engine.register_strategy(self._run_attachs)
 
     async def _run_attachs(
@@ -82,6 +84,8 @@ class System(ORMStore, AsyncPermissionService[UserSession], AsyncPermissionExecu
         - ``(Permission, "-")``: 从当前掩码中移除
         - ``(Permission, "=")``: 覆盖当前掩码
         """
+        scope = scope_ctx.get(default=Scope.root())
+
         if isinstance(pattern, str):
 
             def decorator(func: Attach, /):
@@ -89,13 +93,19 @@ class System(ORMStore, AsyncPermissionService[UserSession], AsyncPermissionExecu
                     predicate = lambda p: fnmatch.fnmatch(p, pattern)
                 else:
                     predicate = lambda p: p == pattern
-                self.attaches.append((predicate, lambda u, _, c, m, pl: func(u, c, m, pl)))
+                scope.effect(
+                    lambda: self.attaches.append((predicate, lambda u, _, c, m, pl: func(u, c, m, pl))),
+                    f"system.attach({pattern})"
+                )
                 return func
 
             return decorator
 
         def wrapper(func: Attach1, /):
-            self.attaches.append((pattern, func))
+            scope.effect(
+                lambda: self.attaches.append((pattern, func)),
+                f"system.attach()"
+            )
             return func
 
         return wrapper

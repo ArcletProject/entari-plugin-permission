@@ -10,7 +10,7 @@ from arclet.cithun import User as CithunUser  # noqa: F401
 
 from arclet.entari import declare_static, metadata, plugin
 from arclet.entari.event.lifespan import Startup
-from entari_plugin_user import UserSession, get_user
+from entari_plugin_user.models import UserSession
 
 from .check import check_permission as check_permission
 from .check import require_permission as require_permission
@@ -39,6 +39,7 @@ system.pre_assign(AUTH_3, "authority.3", Permission("v-a"))
 system.pre_assign(AUTH_4, "authority.4", Permission("v-a"))
 system.pre_assign(AUTH_5, "authority.5", Permission("v-a"))
 
+
 @plugin.listen(Startup)
 async def init_roles():
     await system.load()
@@ -52,15 +53,12 @@ async def init_roles():
         ["member", "advanced-member", "admin", "senior-admin", "superuser"]
     )
 
-@system.attach(lambda r: r.startswith("authority."))
-async def authority_attach(user, path, sess: UserSession | None, current, lookup):
-    if not sess:
-        return current
-    if sess.user.authority <= 0:
-        return current
-    if sess.user.authority > 5:
-        return Permission(7)
-    role_id = AUTHORITY.levels[sess.user.authority - 1].role_id
-    role = await system.get_role(role_id)
-    role_mask = await system.suget(role, path, context=sess)
-    return current | (role_mask or Permission.NONE)
+
+@system.engine.register_strategy
+async def authority_attach(user, resource, context: UserSession | None, current_mask, permission_lookup):
+    if context:
+        user = await system.get_or_create_user(f"user:{context.user.id}", context.user.name)
+        await system.set_user_track_level(
+            user, AUTHORITY, context.user.authority - 1,
+        )
+    return current_mask

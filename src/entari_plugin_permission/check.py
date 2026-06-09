@@ -1,6 +1,6 @@
 from arclet.cithun import Permission
 from arclet.letoderea import Propagator, STOP
-from entari_plugin_user import UserSession, get_user
+from entari_plugin_user import UserSession
 
 from .main import system
 
@@ -41,13 +41,14 @@ class require_permission(Propagator):
         default_available (bool): 是否默认可用，默认为True
         prompt (bool): 是否提示
     """
-    def __init__(self, permission: str, default_available: bool = True, prompt: bool = False):
+    def __init__(self, permission: str, default_available: bool = True, prompt: bool = False, priority: int = 1):
         self.checker = check_permission(permission, default_available, prompt)
+        self.priority = priority
 
-    async def __call__(self, sess: UserSession) -> bool:
-        if not (ans := await self.checker(sess)):
+    async def __call__(self, sess: UserSession):
+        if not await self.checker(sess):
             raise STOP
-        return ans
+        return
 
     def compose(self):
-        yield self.__call__, True, 1
+        yield self.__call__, True, self.priority
