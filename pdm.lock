@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:eac3441312a2b62c5270c5de4a82fed3c35f2eb46db30a3ed3841c2661052453"
+content_hash = "sha256:1eb3ef2d2c307990fdd387f307c851fd9b7c1084ea88023baa193c5099285098"
 
 [[metadata.targets]]
 requires_python = ">=3.10"
@@ -235,13 +235,13 @@ files = [
 
 [[package]]
 name = "arclet-cithun"
-version = "1.3.3"
+version = "1.4.0"
 requires_python = ">=3.10"
 summary = "A permission system modeled on the file permission system under Unix."
 groups = ["default"]
 files = [
-    {file = "arclet_cithun-1.3.3-py3-none-any.whl", hash = "sha256:15c0662ecc8791b81e3c32b5469083524c7f4893aecb2ceb0a9c95aa8b134db7"},
-    {file = "arclet_cithun-1.3.3.tar.gz", hash = "sha256:99bb02a45a46920d2c3c6a1688bddef0269960183b356aeedd7436162e0bdb44"},
+    {file = "arclet_cithun-1.4.0-py3-none-any.whl", hash = "sha256:b555c804d7b067e63c4fab90ff744be8a1d471569a0f265c9c3b4d39df333db2"},
+    {file = "arclet_cithun-1.4.0.tar.gz", hash = "sha256:8cafb4591c798f05906ce8827eaf19661bc3e2dae4d754db89c1351ab6fea275"},
 ]
 
 [[package]]
@@ -377,7 +377,7 @@ files = [
 
 [[package]]
 name = "entari-plugin-database"
-version = "0.3.0"
+version = "0.3.1"
 requires_python = ">=3.10"
 summary = "Entari plugin for SQLAlchemy ORM"
 groups = ["default"]
@@ -391,8 +391,8 @@ dependencies = [
     "tarina<0.8.0,>=0.7.1",
 ]
 files = [
-    {file = "entari_plugin_database-0.3.0-py3-none-any.whl", hash = "sha256:a7af4e81a6e88a8b09fcec32eb84ac9723b840b40069b0bc44aabd5f8b99804e"},
-    {file = "entari_plugin_database-0.3.0.tar.gz", hash = "sha256:272c8be6d712c3058f6d07964f2b8d006db0559f673b27a3abbcd548b0f99b89"},
+    {file = "entari_plugin_database-0.3.1-py3-none-any.whl", hash = "sha256:51279f7a84af14c1cc8b975379ddbcb76416bfdde68165cf68f3a2719c4c891b"},
+    {file = "entari_plugin_database-0.3.1.tar.gz", hash = "sha256:a9ef3d7150ca3cf414f024a9f19cfe184b976555eda1bcf14f4bdab83bc09e87"},
 ]
 
 [[package]]
@@ -412,18 +412,18 @@ files = [
 
 [[package]]
 name = "entari-plugin-user"
-version = "0.1.5"
+version = "0.1.6"
 requires_python = ">=3.10"
 summary = "Entari 用户插件"
 groups = ["default"]
 dependencies = [
-    "arclet-entari>=0.17.0rc4",
-    "entari-plugin-database>=0.2.3",
+    "arclet-entari>=0.18.0rc2",
+    "entari-plugin-database>=0.3.1",
     "expiringdictx>=1.1.0",
 ]
 files = [
-    {file = "entari_plugin_user-0.1.5-py3-none-any.whl", hash = "sha256:47ce75ed65937a817240bf53b916e74da95d94e2aff2cf21517d0091578cc5d0"},
-    {file = "entari_plugin_user-0.1.5.tar.gz", hash = "sha256:f5371a198831c66e1b16b8cb231e3d7a7cffcecd72c2146fdf6c23dc637fecac"},
+    {file = "entari_plugin_user-0.1.6-py3-none-any.whl", hash = "sha256:56faa6667299eb63c67d4c455002ccc41a75abefc24954022c0ac56a8aff596e"},
+    {file = "entari_plugin_user-0.1.6.tar.gz", hash = "sha256:84fa4a23988436dbc29f2cad74eed649af411b883095de4701a8b1be66b72bbf"},
 ]
 
 [[package]]
