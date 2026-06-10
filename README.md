@@ -1,2 +1,1 @@
-# entari-plugin-permission
-Permission system for Entari based on Cithun
+./src/entari_plugin_permission/README.md
