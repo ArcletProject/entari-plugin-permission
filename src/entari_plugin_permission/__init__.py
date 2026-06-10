@@ -20,7 +20,7 @@ from .main import system as system
 from .event import UserSetTrackLevel as UserSetTrackLevel
 from .params import UserOwner as UserOwner
 from .config import Config
-from . import handler
+from . import handler  # noqa: F401
 
 metadata(
     name="Permission",
