@@ -3,18 +3,27 @@ from typing import Literal
 from arclet.alconna import Alconna, Args, CommandMeta, Option, Subcommand, store_true
 from arclet.cithun import Permission
 from arclet.cithun.exceptions import PermissionDeniedError, ResourceNotFoundError
+from arclet.entari.plugin import PluginRole
 from nepattern import BasePattern, MatchFailed, MatchMode
 
-from arclet.entari import MessageChain, plugin_config, command
+from arclet.entari import MessageChain, plugin_config, command, metadata
 from arclet.letoderea import propagate
 from entari_plugin_user import UserSession, get_user
 from satori import At
 
-from .main import AUTH_3, AUTH_1, system
+from .service import AUTH_3, AUTH_1, system
 from .config import Config
 from .params import UserOwner
 from .check import require_permission
 
+
+metadata(
+    name="权限指令",
+    role=PluginRole.NORMAL,
+    author=[{"name": "RF-Tar-Railt", "email": "rf_tar_railt@qq.com"}],
+    version="0.1.0",
+    description="权限插件的指令模块，提供权限管理的指令",
+)
 
 cfg = plugin_config(Config)
 

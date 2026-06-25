@@ -1,13 +1,11 @@
 import asyncio
-from collections.abc import Callable, Iterable
-from re import Pattern
+from collections.abc import Iterable
 
 from arclet.letoderea import publish
-from arclet.cithun import InheritMode, ResourceNode, Role, User
+from arclet.cithun import ResourceNode, Role, User
 from arclet.cithun.async_ import AsyncStore
 from arclet.cithun.model import AclEntry, Permission, Track, TrackLevel
 from entari_plugin_database import get_session
-from sqlalchemy.orm import selectinload
 from sqlalchemy.sql import select
 
 from .event import UserSetTrackLevel
@@ -30,15 +28,6 @@ class ORMStore(AsyncStore):
         self.roles: dict[str, Role] = {"group:default": Role("group:default", "Default")}
         self.acls: dict[int, AclEntry] = {}  # type: ignore
         self.tracks: dict[str, Track] = {}
-
-        self._predefine_resources = []
-        self._predefine_users = []
-        self._predefine_roles = [("group:default", "Default")]
-        self._predefine_tracks = []
-        self._predefine_track_levels = []
-        self._predefine_assigns = []
-
-        self._hooks = []
 
     @property
     def default_role(self) -> Role:
@@ -355,116 +344,3 @@ class ORMStore(AsyncStore):
             acl.allow_mask = allow_mask
             if deny_mask is not None:
                 acl.deny_mask = deny_mask
-
-    async def load(self):
-        async with get_session() as session:
-            users = (await session.scalars(select(UserModel))).all()
-            for user_model in users:
-                user = user_model.dump()
-                self.users[user.id] = user
-                role_ids = (
-                    await session.scalars(select(UserRolesModel.role_id).where(UserRolesModel.user_id == user.id))
-                ).all()
-                user.role_ids.extend(role_ids)
-            roles = (await session.scalars(select(RoleModel))).all()
-            for role_model in roles:
-                role = role_model.dump()
-                self.roles[role.id] = role
-                parent_role_ids = (
-                    await session.scalars(
-                        select(RoleInheritsModel.parent_role_id).where(RoleInheritsModel.role_id == role.id)
-                    )
-                ).all()
-                role.parent_role_ids.extend(parent_role_ids)
-            acls = (await session.scalars(select(AclEntryModel))).all()
-            for acl_model in acls:
-                acl = acl_model.dump()
-                self.acls[acl_model.id] = acl
-            tracks = (await session.scalars(select(TrackModel).options(selectinload(TrackModel.levels)))).all()
-            for track_model in tracks:
-                track = track_model.dump()
-                self.tracks[track.id] = track
-        self.loaded.set()
-        for path, inherit_mode, type_ in self._predefine_resources:
-            if path not in self.resources:
-                await self.define(path, inherit_mode=inherit_mode, type_=type_)
-        for rid, name in self._predefine_roles:
-            role = self.roles[rid]
-            async with get_session() as session:
-                model = RoleModel(id=rid, name=name)
-                await session.merge(model)
-                for parent_rid in role.parent_role_ids:
-                    parent_model = RoleInheritsModel(role_id=rid, parent_role_id=parent_rid)
-                    await session.merge(parent_model)
-                await session.commit()
-        for uid, name in self._predefine_users:
-            user = self.users[uid]
-            async with get_session() as session:
-                model = UserModel(id=uid, name=name)
-                await session.merge(model)
-                for rid in user.role_ids:
-                    user_role_model = UserRolesModel(user_id=uid, role_id=rid)
-                    await session.merge(user_role_model)
-                await session.commit()
-        for tid, name in self._predefine_tracks:
-            track = self.tracks[tid]
-            async with get_session() as session:
-                track_model = TrackModel(id=tid, name=name or tid)
-                await session.merge(track_model)
-                for index, level in enumerate(track.levels):
-                    level_model = TrackLevelModel(
-                        index=index,
-                        track_id=tid,
-                        role_id=level.role_id,
-                        level_name=level.level_name,
-                    )
-                    await session.merge(level_model)
-                await session.commit()
-        for subject, resource_path, allow_mask, deny_mask in self._predefine_assigns:
-            await self.assign(subject, resource_path, allow_mask, deny_mask)
-        for hook in self._hooks:
-            await hook()
-
-    def pre_define(
-        self,
-        path: str,
-        inherit_mode: InheritMode | None = None,
-        type_: str = "GENERIC",
-    ):
-        self._predefine_resources.append((path, inherit_mode, type_))
-
-    def pre_user(self, uid: str, name: str) -> User:
-        user = User(uid, name)
-        user.role_ids.append(self.default_role.id)
-        self.users[uid] = user
-        self._predefine_users.append((uid, name))
-        return user
-
-    def pre_role(self, rid: str, name: str) -> Role:
-        role = Role(rid, name)
-        self._predefine_roles.append((rid, name))
-        self.roles[rid] = role
-        return role
-
-    def pre_track(self, tid: str, name: str | None = None) -> Track:
-        track = Track(tid, name or tid)
-        self.tracks[tid] = track
-        self._predefine_tracks.append((tid, name))
-        return track
-
-    def pre_track_level(self, track: Track, role: Role, name: str | None = None) -> None:
-        level = TrackLevel(role.id, name or role.name)
-        track.levels.append(level)
-
-    def on_loaded(self, func):
-        self._hooks.append(func)
-        return func
-
-    def pre_assign(
-        self,
-        subject: User | Role,
-        resource_path: str | Callable[[str], bool] | Pattern[str],
-        allow_mask: Permission,
-        deny_mask: Permission = Permission.NONE,
-    ):
-        self._predefine_assigns.append((subject, resource_path, allow_mask, deny_mask))

@@ -5,7 +5,7 @@ from arclet.letoderea import Depends
 from arclet.entari import Session
 from entari_plugin_user import get_user
 
-from .main import system
+from .service import system
 
 
 async def get_user_model(sess: Session) -> User:

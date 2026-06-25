@@ -9,21 +9,23 @@ from arclet.cithun import Role as CithunRole  # noqa: F401
 from arclet.cithun import User as CithunUser  # noqa: F401
 
 from arclet.entari import declare_static, metadata, plugin
-from arclet.entari.event.lifespan import Startup
+from arclet.entari.plugin.model import PluginRole
 from entari_plugin_user.models import UserSession
 from entari_plugin_user.utils import set_user_authority
 
-from .main import AUTH_1, AUTH_2, AUTH_3, AUTH_4, AUTH_5, AUTHORITY
+from .service import AUTH_1, AUTH_2, AUTH_3, AUTH_4, AUTH_5, AUTHORITY
 from .check import check_permission as check_permission
 from .check import require_permission as require_permission
-from .main import system as system
+from .service import system as system
 from .event import UserSetTrackLevel as UserSetTrackLevel
 from .params import UserOwner as UserOwner
 from .config import Config
 from . import handler  # noqa: F401
 
+
 metadata(
-    name="Permission",
+    name="权限",
+    role=PluginRole.COMPLEX,
     author=[{"name": "RF-Tar-Railt", "email": "rf_tar_railt@qq.com"}],
     version="0.1.0",
     description="基于 Cithun 的权限系统",
@@ -31,12 +33,13 @@ metadata(
     config=Config,
     readme="README.md",
 )
+
 declare_static()
+plugin.add_service(system)
 
 
-@plugin.listen(Startup)
+@system.on_loaded
 async def init_roles():
-    await system.load()
     await system.inherit(AUTH_2, AUTH_1)
     await system.inherit(AUTH_3, AUTH_2)
     await system.inherit(AUTH_4, AUTH_3)

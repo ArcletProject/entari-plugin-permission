@@ -2,7 +2,7 @@ from arclet.cithun import Permission
 from arclet.letoderea import Propagator, STOP
 from entari_plugin_user import UserSession
 
-from .main import system
+from .service import system
 
 
 def check_permission(permission: str, default_available: bool = True, prompt: bool = False):
