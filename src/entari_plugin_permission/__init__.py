@@ -27,7 +27,7 @@ metadata(
     name="权限",
     role=PluginRole.COMPLEX,
     author=[{"name": "RF-Tar-Railt", "email": "rf_tar_railt@qq.com"}],
-    version="0.1.0",
+    version="0.1.1",
     description="基于 Cithun 的权限系统",
     depend_services=["database/sqlalchemy"],
     config=Config,

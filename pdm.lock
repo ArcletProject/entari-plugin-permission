@@ -5,7 +5,7 @@
 groups = ["default", "dev"]
 strategy = ["inherit_metadata"]
 lock_version = "4.5.0"
-content_hash = "sha256:e780ee202788daa7987c0f71b018b9e18d28cd31eb8d3f4bb3b21d7d77db2088"
+content_hash = "sha256:e706d59444b25963d13996de725110b99a53aec5f27bcaa09a25febe9b881910"
 
 [[metadata.targets]]
 requires_python = ">=3.10"
@@ -377,37 +377,37 @@ files = [
 
 [[package]]
 name = "entari-plugin-database"
-version = "0.3.1"
+version = "0.3.2"
 requires_python = ">=3.10"
 summary = "Entari plugin for SQLAlchemy ORM"
 groups = ["default"]
 dependencies = [
     "aiosqlite>=0.21.0",
     "alembic>=1.16.5",
-    "arclet-entari<0.19.0,>=0.18.0rc1",
+    "arclet-entari<0.19.0,>=0.18.0rc4",
     "arclet-letoderea>=0.19.5",
     "graia-amnesia>=0.11.4",
     "sqlalchemy>=2.0.42",
     "tarina<0.8.0,>=0.7.1",
 ]
 files = [
-    {file = "entari_plugin_database-0.3.1-py3-none-any.whl", hash = "sha256:51279f7a84af14c1cc8b975379ddbcb76416bfdde68165cf68f3a2719c4c891b"},
-    {file = "entari_plugin_database-0.3.1.tar.gz", hash = "sha256:a9ef3d7150ca3cf414f024a9f19cfe184b976555eda1bcf14f4bdab83bc09e87"},
+    {file = "entari_plugin_database-0.3.2-py3-none-any.whl", hash = "sha256:6bd0593054e82257376f0f14ab713ecb6ed9d410b73b107100b6f6765e19651e"},
+    {file = "entari_plugin_database-0.3.2.tar.gz", hash = "sha256:49066ec1049e7e6cf7c3ebfe5971817e5c78d7fe7cbc571170b8c3812f9ed322"},
 ]
 
 [[package]]
 name = "entari-plugin-server"
-version = "0.7.0"
+version = "0.7.1"
 requires_python = ">=3.10"
 summary = "Entari plugin for running Satori Server"
 groups = ["dev"]
 dependencies = [
-    "arclet-entari<0.19.0,>=0.18.0rc1",
+    "arclet-entari<0.19.0,>=0.18.0rc4",
     "satori-python-server<1.4.0,>=1.3.0",
 ]
 files = [
-    {file = "entari_plugin_server-0.7.0-py3-none-any.whl", hash = "sha256:9a69388f8b71552b62a8bd5d98c39a94551222a50bc53caee0da1cea3d7bfbb7"},
-    {file = "entari_plugin_server-0.7.0.tar.gz", hash = "sha256:44a349318bbea178e207097657e24f42fb18abdf97581586325b15c015e7e1ec"},
+    {file = "entari_plugin_server-0.7.1-py3-none-any.whl", hash = "sha256:e3f3176eb6da4f4773475122476508293bc211ccfc847f377e5545d7b86afc51"},
+    {file = "entari_plugin_server-0.7.1.tar.gz", hash = "sha256:a5d2c902651c6cdbbb933bd2158f420a86461f9daa15fb349ab681c7c61511dd"},
 ]
 
 [[package]]
