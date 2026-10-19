@@ -9,7 +9,7 @@ from arclet.cithun.model import Permission, ResourceNode, Role, User, Track, Tra
 from arclet.cithun.async_ import AsyncPermissionEngine, AsyncPermissionExecutor, AsyncPermissionService
 from arclet.letoderea.scope import Scope, scope_ctx
 from arclet.letoderea.utils import DisposableList
-from entari_plugin_database import get_session
+from entari_plugin_database import wait_for_migration, get_session
 from entari_plugin_user.models import UserSession
 from launart import Service, Launart
 from launart.status import Phase
@@ -51,6 +51,7 @@ class PermissionService(Service, ORMStore, AsyncPermissionService[UserSession], 
 
     async def launch(self, manager: Launart):
         async with self.stage("preparing"):
+            await wait_for_migration()
             await self.load()
         async with self.stage("blocking"):
             for hook in self._hooks:

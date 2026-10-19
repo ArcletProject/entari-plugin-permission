@@ -1,23 +1,23 @@
 [project]
 name = "entari-plugin-permission"
-version = "0.1.1"
+version = "0.2.0"
 description = "Permission system for Entari based on Cithun"
 authors = [
     {"name" = "RF-Tar-Railt", "email" = "rf_tar_railt@qq.com"}
 ]
 dependencies = [
-    "arclet-entari>=0.18.0rc4",
+    "arclet-entari>=0.19.0",
     "arclet-cithun<1.5.0,>=1.4.0",
     "entari-plugin-user>=0.1.6",
-    "entari-plugin-database>=0.3.2",
+    "entari-plugin-database>=0.4.1",
 ]
-requires-python = ">=3.10"
+requires-python = ">=3.11"
 readme = "README.md"
 license = {"text" = "MIT"}
 
 [dependency-groups]
 dev = [
-    "arclet-entari[yaml,cron,reload,dotenv] >= 0.17.4",
+    "arclet-entari[yaml,cron,reload,dotenv] >= 0.19.0",
     "satori-python-adapter-onebot11>=0.4.4",
     "entari-plugin-server>=0.7.0",
 ]
