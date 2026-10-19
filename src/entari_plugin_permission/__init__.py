@@ -27,7 +27,7 @@ metadata(
     name="权限",
     role=PluginRole.COMPLEX,
     author=[{"name": "RF-Tar-Railt", "email": "rf_tar_railt@qq.com"}],
-    version="0.1.1",
+    version="0.2.0",
     description="基于 Cithun 的权限系统",
     config=Config,
     readme="README.md",
